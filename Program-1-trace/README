@@ -1,0 +1,21 @@
+Name: Francisco Irazaba Lab Time: 3–6 PM
+
+Files Included in Submission:
+
+trace.c: The main implementation file for the trace program. It contains logic for parsing and printing information about Ethernet, IP, ARP, TCP, UDP, and ICMP headers from a given .pcap file.
+
+trace.h: Header file containing macros, structs, and function prototypes used in trace.c.
+
+checksum.c and checksum.h: Contain the Internet checksum functions used for validating IP and TCP headers.
+
+Makefile: Builds the program on the CSL Unix machines without warnings. The output executable can be run by providing a .pcap file as an argument.
+
+README: This file.
+
+Description: This program analyzes a .pcap file and extracts protocol headers including Ethernet, IP, ARP, TCP, UDP, and ICMP. It prints formatted, human-readable information about each packet's contents, including checksums and protocol-specific details. This tool is useful for debugging and understanding packet-level network traffic.
+
+How to Compile: Run make in the directory containing the source files. The compiled program will be named trace.
+
+How to Run:
+
+./trace <your_file.pcap>

@@ -1,0 +1,34 @@
+Name: Francisco Irazaba  
+Lab Time: 3–6 PM  
+
+Files Included in Submission:
+
+cclient.c: Client-side implementation. Connects to the server, sends PDUs using `sendPDU()`, and handles both user input and incoming messages using `poll()`.
+
+server.c: Server-side implementation. Accepts multiple client connections using `poll()`, receives PDUs with `recvPDU()`, and prints received messages.
+
+pdu.c and pdu.h: Implementation and header file for `sendPDU()` and `recvPDU()` functions, which build and parse application-level PDUs with a 2-byte length header.
+
+pollLib.c and pollLib.h: Provided polling helper functions used for managing the poll file descriptor set (used in `serverControl()` and `clientControl()`).
+
+network.c and network.h: Provided networking utility code for setting up sockets and connections.
+
+handle.c and handle.h: provide handle table and functionality to add, remove, grow, and lookup handles in the table.
+
+Makefile: Builds the client and server executables (`cclient` and `server`) without warnings on the CSL Unix machines.
+
+README: This file.
+
+Description:  
+This lab implements a TCP-based client-server application that communicates using application-level PDUs. The PDU format includes a 2-byte length header followed by a null-terminated text message payload. The server uses `poll()` to manage multiple client connections simultaneously and continues running until manually terminated. The client uses `poll()` to handle both user input and server messages, and cleanly exits when the server disconnects.
+
+How to Compile:  
+Run `make` in the directory containing the source files. This will produce two executables: `cclient` and `server`.
+
+How to Run:
+
+Server Terminal:
+    ./server [port-number]
+
+Client Terminal:
+    ./cclient handle-name host-name port-number

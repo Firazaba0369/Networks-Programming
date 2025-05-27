@@ -1,0 +1,41 @@
+Name: Francisco Irazaba  
+Lab Time: 3–6 PM  
+
+Files Included in Submission:
+
+rcopy.c: Client-side (UDP) implementation. Reads user input, constructs PDUs using `createPDU()`, prints them with `printPDU()`, and sends them to the server using `sendtoErr()`.
+
+server.c: Server-side (UDP) implementation. Receives PDUs via `recvfrom()`, prints them using `printPDU()`, and echoes the PDU back to the client using `sendtoErr()`.
+
+winbuf.c and winbuf.h: Sliding window and buffer implementation used by client and server. Handles out-of-order packets, retransmission tracking, and orderly delivery.
+
+pdu.c and pdu.h: Implements `createPDU()` and `printPDU()` functions for building and inspecting PDUs with sequence number, checksum, flag, and payload.
+
+safeUtil.c and safeUtil.h: Utility functions, including `safeSendto()` which has been modified to use `sendtoErr()` instead of `sendto()`.
+
+networks.c and networks.h: Provided network utility code for setting up sockets and parsing hostnames.
+
+pollLib.c and pollLib.h: Provided helper functions for working with the `poll()` system call (not heavily used in this lab, but included for future reference).
+
+gethostbyname.c and gethostbyname.h: Provided DNS resolution helpers.
+
+Makefile: Compiles the client and server executables (`rcopy` and `server`) and links against the `sendtoErr` library (`libcpe464.a.b.a`).
+
+README: This file.
+
+How to Compile:  
+Run `make` in the directory containing the source files. This will produce two executables: `rcopy` and `server`.
+
+How to Run:
+
+Server Terminal:
+    ./server error-rate port-number
+
+    Example:
+    ./server 0.05 44444
+
+Client Terminal:
+    ./rcopy from-filename to-filename window-size buffer-size error-rate remote-machine remote-port
+
+    Example:
+    ./rcopy from_file to_file 10 1000 0.1 localhost 44444

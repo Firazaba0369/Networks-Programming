@@ -1,0 +1,129 @@
+**To receive a non-zero grade your server must be able to send messages between 3 cclients.**
+
+OTher Requirements:
+1) Do not use any code off the web or from other students. You may use code that I have given you this
+quarter.
+
+2) Your programs must work on and between unix1-5.
+
+3) Your main() function can only be 15 lines or less. No exceptions unless you talk with me in advance.
+Your main function should coordinate work, not do work.
+
+4) You should try not to duplicate code between the client and the server or within the client/server. Use a
+separate file for commonly used functions. Duplication of code may result in lost points.
+
+5) If you are using your recvPDU()/sendPDU() functions (which you should be using) that you developed
+in lab, these functions put the two byte length on your PDU. So you have the length part of the PDU
+done. Do NOT add a second length field to your PDU.
+
+6) Your PDU length field (which you wrote in the lab assignment) must be the length of the entire PDU
+(so includes counting the two byte length field in the total PDU length). This PDU length must be in
+network order. Our testing expects this.
+
+7) The server should never block waiting on a response from the client. In this respect the server is
+stateless, it receives TCP connections and accept()s them, receives packets and processes them but after
+either of these actions it just goes back to poll() waiting for the next thing to do. (e.g. after the server
+accept()s a TCP connection request from a client the server may NOT block waiting on a flag = 1
+packet from that client.)
+
+8) Use of usleep(), sleep() or any other delay functionality (other than poll()) will result in a 0. Your
+program should not require this. Using poll() with a timeout value other than -1 will result in a zero.
+
+9) You cannot use a busy loop to cause your program to block. Use of a busy loop will result in a grade
+of 0. A busy loop is a loop that just uses the CPU for almost no reason until an event happens. Instead,
+you must use the poll() call on the client and the server to block your program until a packet/STDIN is
+ready for receving/reading.
+
+10) If you think you need to use sleep() or a busy loop you are doing something wrong! Stop and ask for
+help – and redesign your program.
+
+11) The server does not change a message or broadcast packet. The server receives these packets, looks up
+the destinations and forwards the original packet it received to these destinations.
+
+12) All calls to the poll() system call must use a time value of -1 (blocking call). We will look at all of
+your poll/pollLib calls to confirm this. A time value to poll() other than -1is not allowed.
+
+13) You cannot make your sockets non-blocking or use your sockets in any non-blocking fashion. You
+must use poll()on both the client and the server. If you think you have a good reason for making your
+sockets non-blocking talk to Prof. Smith first.
+
+14) You need to check that there are enough runtime parameters and print out an error message if they are
+not correct (segfaulting because of this is not acceptable.)
+
+15) A segfault is never the correct answer to any of life’s problems.
+
+16) malloc() is not the answer to all of life’s memory needs. You may not use malloc()/calloc() (or new in
+C++) in the cclient program. On the server, malloc()/calloc()/new may only be used in support of the
+data structure you use for your table of client handles.
+
+17) Your program should NOT malloc() for every packet or every STDIN message. While you need to use
+malloc (or similar) for your server’s handle-name storage data structure, you do not need to use
+dynamic memory allocation for packets and STDIN since both have a fixed maximum size and only
+one packet/message is being processed at any one time. Poor use of memory allocation will result in
+lost points.
+
+18) Your server must use a dynamic data structure (mallac/realloc, tree, link list, hash…) for storing the
+handles. You pick the data structure. It cannot be fixed size. You can use a built in data structure
+(more likely in C++) or make your own. You cannot use someone else’s code.
+
+19) The input from STDIN will never exceed 1400 at any one time. This includes the command, handles
+and text message.
+
+20) A client needs to be able to send (%M, %C) to itself.
+
+21) You must use the header and packet format given above. (length, flag…)
+
+22) In the chat-header the 2 byte length field must be in network order.
+
+23) Handles are limited to 100 characters. If a handle is longer than 100 characters you should just print
+out an error message and ignore the command (or terminate the client if it is the initial setup).
+
+24) The maximum message length (command, handles and text) is 1400 characters. If more than 1400
+characters are entered, the programs behavior is up to you. Some options include:
+    a. Print out an error message and ignore all input until you hit the next newline. (Completely
+    ignore the command – don’t send anything.)
+    b. Send the message as normal (breaking it up into 200 byte text messages -199 of text, 1-byte
+    null for 200 bytes total)
+    c. Send out the first 1400 bytes and ignore the rest
+    d. Segfaulting is not correct! Your cclient must correctly process the next correctly formatted
+    command.
+25) Name your makefile: Makefile. Your makefile MUST provide a clean target that deletes all of the .o
+and executable files.
+
+26) For testing, we should only need to type make once. If you decide to use a tar file, you must provide a
+separate makefile that will untar your code and then compile it. If our scripts fail because your
+makefile fails to build your program the grader will become upset.
+
+27) The command names cclient and server must be used. Also the run-time parameters should be in the
+order given. See the provided Makefile for help on this. Since we will be using a script to make and
+execute your code, all executable names and parameters must be as listed. If your program fails to run
+with my script you will make the graders upset and may lose 20%.
+
+28) To implement the server you must use the poll() function. You cannot use threads or processes in order
+to handle the multiple clients. (We will use threads/processes in the next program).
+
+29) See the flag MSG_WAITALL that works with the recv() system call. This flag forces recv() to wait
+until an entire message (based on the length field in the recv() call) has been received.
+
+30) If the server receives 0 bytes on a socket, this means the other end has closed the socket and the cclient
+has ended (usually means someone ^c the client). In this case the server should clean up after the client
+(e.g. remove the client handle from its handle table) but NOT try to send a response to the client since
+at this point the client is already gone.
+
+31) If the cclient receives 0 bytes on a recv() on the socket to the server, the client should print out the
+message “Server Terminated” and then end cleanly.
+
+32) The server should never terminate. It must clean up any state information maintained for a client once
+the client terminates (e.g. remove the client’s handle from its table, close the socket). To kill the server
+we will use ^c. Do not handle SIGINT on either the client or server.
+
+33) Possible cclient error messages
+    i. Handle already in use: <handle name>1
+    ii. Invalid handle, handle longer than 100 characters: <handle name>
+    iii. Server Terminated2
+    iv. Client with handle <handle name> does not exist3
+    .
+    v. Invalid command4
+    vi. Invalid command format
+    vii. You should make up error messages for other cases such as where the number of handles on a
+    %C is invalid (e.g. > 9). 
